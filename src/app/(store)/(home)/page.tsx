@@ -4,7 +4,13 @@ import { api } from '@/data/api'
 import { Product } from '@/data/types/product'
 
 async function getFeaturedProducts(): Promise<Product[]> {
-  const response = await api('/products/featured')
+  const response = await api('/products/featured', {
+    // cache: 'force-cache', // Default - Awalys use cache
+    // cache: 'no-force', // Do not use cache
+    next: {
+      revalidate: 60 * 60, // Will revalidate every 60 minutes
+    },
+  })
 
   const products = await response.json()
 

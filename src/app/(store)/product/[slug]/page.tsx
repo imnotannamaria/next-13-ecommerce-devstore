@@ -1,11 +1,33 @@
 import Image from 'next/image'
+import { Product } from '@/data/types/product'
+import { api } from '@/data/api'
 
-export default function Product() {
+interface ProductProps {
+  params: {
+    slug: string
+  }
+}
+
+async function getProduct(slug: string): Promise<Product> {
+  const response = await api(`/products/${slug}`, {
+    next: {
+      revalidate: 60 * 60, // Will revalidate every 60 minutes
+    },
+  })
+
+  const product = await response.json()
+
+  return product
+}
+
+export default async function Product({ params }: ProductProps) {
+  const product = await getProduct(params.slug)
+
   return (
     <div className="relative grid max-h-[860px] grid-cols-3">
       <div className="col-span-2 overflow-hidden">
         <Image
-          src="/moletom-never-stop-learning.png"
+          src={product.image}
           alt="Moletom"
           width={1000}
           height={1000}
@@ -13,20 +35,26 @@ export default function Product() {
         />
       </div>
       <div className="flex flex-col justify-center px-12">
-        <h1 className="text-3xl font-bold leading-tight">
-          Moletom Never Stop Learing
-        </h1>
+        <h1 className="text-3xl font-bold leading-tight">{product.title}</h1>
 
         <p className="mt-2 leading-relaxed text-zinc-400">
-          Moletom fabricado com 88% de algodão e 12% de paliéster.
+          {product.description}
         </p>
 
         <div className="mt-8 flex items-center gap-3">
           <span className="inline-block rounded-full bg-violet-500 px-5 py-2.5 font-semibold">
-            R$129
+            {product.price.toLocaleString('pt-BR', {
+              style: 'currency',
+              currency: 'BRL',
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            })}
           </span>
           <span className="text-sm text-zinc-400">
-            Em 12x s/ juos de R$10,75
+            {(product.price / 12).toLocaleString('pt-BR', {
+              style: 'currency',
+              currency: 'BRL',
+            })}
           </span>
         </div>
 

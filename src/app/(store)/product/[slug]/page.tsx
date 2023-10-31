@@ -2,6 +2,7 @@ import Image from 'next/image'
 import { Product } from '@/data/types/product'
 import { api } from '@/data/api'
 import { Metadata } from 'next'
+import { AddToCartButton } from '@/components/add-to-cart-buton'
 
 interface ProductProps {
   params: {
@@ -110,12 +111,7 @@ export default async function Product({ params }: ProductProps) {
           </div>
         </div>
 
-        <button
-          type="button"
-          className="mt-8 flex h-12 items-center justify-center rounded-full bg-emerald-600 font-semibold text-white"
-        >
-          Adicionar ao carrinho
-        </button>
+        <AddToCartButton productId={product.id} />
       </div>
     </div>
   )
